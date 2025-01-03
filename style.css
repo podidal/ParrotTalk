@@ -23,6 +23,158 @@ button {
     transition: all 0.2s ease;
 }
 
+/* Dark mode styles */
+.dark-mode {
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+.dark-mode .bg-white {
+    background-color: #2d2d2d;
+}
+
+.dark-mode .bg-gray-50 {
+    background-color: #363636;
+}
+
+.dark-mode .bg-gray-100 {
+    background-color: #404040;
+}
+
+.dark-mode .text-gray-500 {
+    color: #a0a0a0;
+}
+
+.dark-mode .text-gray-600 {
+    color: #b0b0b0;
+}
+
+.dark-mode .text-gray-700 {
+    color: #c0c0c0;
+}
+
+.dark-mode .text-gray-800 {
+    color: #d0d0d0;
+}
+
+.dark-mode .border {
+    border-color: #404040;
+}
+
+.dark-mode .border-b {
+    border-bottom-color: #404040;
+}
+
+.dark-mode .border-t {
+    border-top-color: #404040;
+}
+
+.dark-mode input[type="range"] {
+    background-color: #404040;
+}
+
+.dark-mode input[type="range"]::-webkit-slider-thumb {
+    background-color: #ffffff;
+}
+
+.dark-mode input[type="range"]::-moz-range-thumb {
+    background-color: #ffffff;
+}
+
+.dark-mode select,
+.dark-mode input[type="time"],
+.dark-mode input[type="number"] {
+    background-color: #363636;
+    color: #ffffff;
+    border-color: #404040;
+}
+
+.dark-mode select option {
+    background-color: #2d2d2d;
+    color: #ffffff;
+}
+
+.dark-mode button.modal-close {
+    color: #a0a0a0;
+}
+
+.dark-mode button.modal-close:hover {
+    color: #ffffff;
+}
+
+/* Slider customization */
+input[type="range"] {
+    -webkit-appearance: none;
+    height: 8px;
+    border-radius: 4px;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+    transform: scale(1.1);
+}
+
+/* Modal animations */
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-container {
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+/* Progress bar customization */
+progress {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+progress::-webkit-progress-bar {
+    background-color: #e5e7eb;
+    border-radius: 4px;
+}
+
+progress::-webkit-progress-value {
+    background-color: #3b82f6;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+progress::-moz-progress-bar {
+    background-color: #3b82f6;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.dark-mode progress::-webkit-progress-bar {
+    background-color: #404040;
+}
+
 /* Custom scrollbar for phrase list */
 #phraseList::-webkit-scrollbar {
     width: 8px;
@@ -40,4 +192,16 @@ button {
 
 #phraseList::-webkit-scrollbar-thumb:hover {
     background: #555;
+}
+
+.dark-mode #phraseList::-webkit-scrollbar-track {
+    background: #2d2d2d;
+}
+
+.dark-mode #phraseList::-webkit-scrollbar-thumb {
+    background: #666;
+}
+
+.dark-mode #phraseList::-webkit-scrollbar-thumb:hover {
+    background: #888;
 }

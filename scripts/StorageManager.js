@@ -5,27 +5,52 @@
 class StorageManager {
     constructor() {
         this.STORAGE_KEY = 'parrotTalk_recordings';
+        this.CATEGORIES_KEY = 'parrotTalk_categories';
+        this.initializeStorage();
+    }
+
+    /**
+     * @private
+     * @method initializeStorage
+     * @description Initializes storage with default categories if needed
+     */
+    initializeStorage() {
+        if (!localStorage.getItem(this.CATEGORIES_KEY)) {
+            const defaultCategories = ['Greetings', 'Commands', 'Phrases', 'Songs'];
+            localStorage.setItem(this.CATEGORIES_KEY, JSON.stringify(defaultCategories));
+        }
     }
 
     /**
      * @method saveRecording
-     * @param {string} name - Name of the recording
-     * @param {Blob} audioBlob - The audio blob to save
+     * @param {Object} recordingData - Recording data and metadata
+     * @param {string} recordingData.name - Name of the recording
+     * @param {Blob} recordingData.audioBlob - The audio blob to save
+     * @param {string} recordingData.category - Category of the recording
+     * @param {Object} recordingData.settings - Playback settings
      * @returns {Promise<string>} ID of the saved recording
      */
-    async saveRecording(name, audioBlob) {
+    async saveRecording(recordingData) {
         const recordings = this.getRecordings();
         const id = `recording_${Date.now()}`;
         
         // Convert blob to base64
-        const base64Data = await this.blobToBase64(audioBlob);
+        const base64Data = await this.blobToBase64(recordingData.audioBlob);
         
         recordings[id] = {
             id,
-            name,
+            name: recordingData.name,
+            category: recordingData.category || 'Phrases',
             data: base64Data,
+            settings: recordingData.settings || {
+                volume: 1,
+                pitch: 1,
+                rate: 1
+            },
             createdAt: new Date().toISOString(),
-            playCount: 0
+            lastPlayed: null,
+            playCount: 0,
+            duration: recordingData.duration || 0
         };
 
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(recordings));
@@ -67,6 +92,53 @@ class StorageManager {
     }
 
     /**
+     * @method getCategories
+     * @returns {string[]} List of available categories
+     */
+    getCategories() {
+        return JSON.parse(localStorage.getItem(this.CATEGORIES_KEY));
+    }
+
+    /**
+     * @method addCategory
+     * @param {string} category - New category name
+     */
+    addCategory(category) {
+        const categories = this.getCategories();
+        if (!categories.includes(category)) {
+            categories.push(category);
+            localStorage.setItem(this.CATEGORIES_KEY, JSON.stringify(categories));
+        }
+    }
+
+    /**
+     * @method updateRecordingMetadata
+     * @param {string} id - Recording ID
+     * @param {Object} metadata - Updated metadata
+     */
+    updateRecordingMetadata(id, metadata) {
+        const recordings = this.getRecordings();
+        if (recordings[id]) {
+            recordings[id] = { ...recordings[id], ...metadata };
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(recordings));
+        }
+    }
+
+    /**
+     * @method getRecordingsByCategory
+     * @param {string} category - Category to filter by
+     * @returns {Object} Filtered recordings
+     */
+    getRecordingsByCategory(category) {
+        const recordings = this.getRecordings();
+        return Object.fromEntries(
+            Object.entries(recordings).filter(([_, recording]) => 
+                recording.category === category
+            )
+        );
+    }
+
+    /**
      * @method updatePlayCount
      * @param {string} id - ID of the recording
      */
@@ -74,6 +146,7 @@ class StorageManager {
         const recordings = this.getRecordings();
         if (recordings[id]) {
             recordings[id].playCount += 1;
+            recordings[id].lastPlayed = new Date().toISOString();
             localStorage.setItem(this.STORAGE_KEY, JSON.stringify(recordings));
         }
     }

@@ -7,6 +7,9 @@ class AudioRecorder {
         this.mediaRecorder = null;
         this.audioChunks = [];
         this.isRecording = false;
+        this.recordingTimer = null;
+        this.recordingDuration = 0;
+        this.maxDuration = 300; // 5 minutes max recording time
     }
 
     /**
@@ -48,7 +51,7 @@ class AudioRecorder {
 
     /**
      * @method startRecording
-     * @description Starts recording audio
+     * @description Starts recording audio with duration tracking
      * @throws {Error} If recorder is not initialized
      */
     startRecording() {
@@ -56,19 +59,45 @@ class AudioRecorder {
             throw new Error('Recorder not initialized');
         }
         this.audioChunks = [];
+        this.recordingDuration = 0;
         this.mediaRecorder.start();
         this.isRecording = true;
+
+        // Start duration timer
+        this.recordingTimer = setInterval(() => {
+            this.recordingDuration++;
+            window.dispatchEvent(new CustomEvent('recordingProgress', {
+                detail: { duration: this.recordingDuration }
+            }));
+
+            // Auto-stop if max duration reached
+            if (this.recordingDuration >= this.maxDuration) {
+                this.stopRecording();
+            }
+        }, 1000);
     }
 
     /**
      * @method stopRecording
-     * @description Stops recording audio
+     * @description Stops recording audio and cleans up timers
      */
     stopRecording() {
         if (this.mediaRecorder && this.isRecording) {
             this.mediaRecorder.stop();
             this.isRecording = false;
+            if (this.recordingTimer) {
+                clearInterval(this.recordingTimer);
+                this.recordingTimer = null;
+            }
         }
+    }
+
+    /**
+     * @method setMaxDuration
+     * @param {number} seconds - Maximum recording duration in seconds
+     */
+    setMaxDuration(seconds) {
+        this.maxDuration = Math.max(10, Math.min(600, seconds)); // Between 10s and 10m
     }
 }
 
