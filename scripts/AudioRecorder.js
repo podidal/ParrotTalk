@@ -224,7 +224,6 @@ class AudioRecorder {
                         composed: true // Cross shadow DOM boundary if any
                     });
                     document.dispatchEvent(event);
-                    M.toast({html: 'Added to training queue', classes: 'green'});
                 });
 
                 phraseList.appendChild(item);

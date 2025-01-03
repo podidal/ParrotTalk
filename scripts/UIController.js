@@ -34,22 +34,8 @@ class UIController {
             });
         });
 
-        // Training controls
-        document.getElementById('startTrainingBtn').addEventListener('click', () => {
-            if (this.trainingSession) {
-                this.trainingSession.stop();
-                this.trainingSession = null;
-                document.getElementById('startTrainingBtn').innerHTML = '<i class="material-icons left">play_arrow</i>Start Training';
-                document.getElementById('startTrainingBtn').classList.remove('red');
-                document.getElementById('startTrainingBtn').classList.add('green');
-            } else {
-                this.trainingSession = new TrainingSession();
-                document.getElementById('startTrainingBtn').innerHTML = '<i class="material-icons left">stop</i>Stop Training';
-                document.getElementById('startTrainingBtn').classList.remove('green');
-                document.getElementById('startTrainingBtn').classList.add('red');
-            }
-        });
-
+        // Training controls initialized in TrainingSession class
+        
         // Settings sliders
         const volumeSlider = document.getElementById('volumeSlider');
         const repetitionsSlider = document.getElementById('repetitionsSlider');
@@ -268,6 +254,8 @@ class UIController {
         // Update content if needed
         if (screenName === 'analytics') {
             this.updateAnalytics();
+        } else if (screenName === 'train' && !this.trainingSession) {
+            this.trainingSession = new TrainingSession();
         }
     }
 
@@ -388,20 +376,37 @@ class TrainingSession {
         this.isTraining = false;
         this.repetitions = parseInt(document.getElementById('repetitionsSlider')?.value || '3');
         this.interval = parseInt(document.getElementById('intervalSlider')?.value || '5') * 1000;
+        this.startBtn = document.getElementById('startTrainingBtn');
+        this.sessionStartTime = null;
+        this.isRandomOrder = false;
         this.initialize();
     }
 
     initialize() {
         console.log('Initializing training session');
-        // Initialize training controls
-        const startBtn = document.getElementById('startTrainingBtn');
-        if (startBtn) {
-            startBtn.addEventListener('click', () => {
+        
+        // Initialize start button
+        if (this.startBtn) {
+            // Remove any existing listeners
+            const newBtn = this.startBtn.cloneNode(true);
+            this.startBtn.parentNode.replaceChild(newBtn, this.startBtn);
+            this.startBtn = newBtn;
+            
+            this.startBtn.addEventListener('click', () => {
                 if (this.isTraining) {
                     this.stopTraining();
                 } else {
                     this.startTraining();
                 }
+            });
+        }
+
+        // Initialize random order toggle
+        const randomOrderToggle = document.getElementById('randomOrderToggle');
+        if (randomOrderToggle) {
+            randomOrderToggle.addEventListener('change', (e) => {
+                this.isRandomOrder = e.target.checked;
+                console.log('Random order:', this.isRandomOrder);
             });
         }
 
@@ -420,6 +425,16 @@ class TrainingSession {
                 this.setInterval(e.target.value);
             });
         }
+    }
+
+    shuffleQueue() {
+        // Fisher-Yates shuffle algorithm
+        const array = [...this.queue];
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
     }
 
     setRepetitions(value) {
@@ -441,6 +456,8 @@ class TrainingSession {
 
         try {
             this.isTraining = true;
+            this.sessionStartTime = Date.now(); // Track session start time
+            
             const startBtn = document.getElementById('startTrainingBtn');
             if (startBtn) {
                 startBtn.innerHTML = '<i class="material-icons left">stop</i>Stop Training';
@@ -466,8 +483,12 @@ class TrainingSession {
             // Start the training loop
             for (let rep = 0; rep < this.repetitions && this.isTraining; rep++) {
                 console.log(`Starting repetition ${rep + 1} of ${this.repetitions}`);
-                for (let i = 0; i < this.queue.length && this.isTraining; i++) {
-                    const recordingId = this.queue[i];
+                
+                // Get the queue order for this repetition
+                const playQueue = this.isRandomOrder ? this.shuffleQueue() : this.queue;
+                
+                for (let i = 0; i < playQueue.length && this.isTraining; i++) {
+                    const recordingId = playQueue[i];
                     const recording = await storageManager.getRecording(recordingId);
                     
                     if (!recording) {
@@ -507,7 +528,7 @@ class TrainingSession {
                     }
 
                     // Wait for interval unless it's the last item
-                    if (this.isTraining && (i < this.queue.length - 1 || rep < this.repetitions - 1)) {
+                    if (this.isTraining && (i < playQueue.length - 1 || rep < this.repetitions - 1)) {
                         await new Promise(resolve => setTimeout(resolve, this.interval));
                     }
                 }
@@ -515,6 +536,7 @@ class TrainingSession {
 
             // Training completed
             if (this.isTraining) {
+                await this.saveTrainingSession();
                 this.stopTraining();
                 M.toast({html: 'Training session completed!', classes: 'green'});
             }
@@ -526,9 +548,28 @@ class TrainingSession {
         }
     }
 
+    async saveTrainingSession() {
+        const duration = Date.now() - this.sessionStartTime;
+        await storageManager.savePracticeSession(duration, this.queue);
+        // Update analytics
+        const uiController = window.uiController;
+        if (uiController) {
+            if (uiController.currentScreen === 'analytics') {
+                uiController.updateAnalytics();
+            }
+            uiController.updateHomeScreen();
+        }
+    }
+
     stopTraining() {
         console.log('Stopping training session');
         this.isTraining = false;
+
+        // Save session if it was running
+        if (this.sessionStartTime) {
+            this.saveTrainingSession();
+            this.sessionStartTime = null;
+        }
 
         // Update button
         const startBtn = document.getElementById('startTrainingBtn');

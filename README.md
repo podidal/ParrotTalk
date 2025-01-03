@@ -76,6 +76,94 @@ Please follow the project guidelines when contributing to this project. Ensure a
 3. Pass all existing tests
 4. Include new tests for new functionality
 
+## Current TODO List
+
+### High Priority
+- [ ] Implement error handling for audio recording failures
+- [ ] Add data persistence layer for recorded phrases
+- [ ] Implement user feedback system for recording quality
+- [ ] Add audio waveform visualization during recording
+
+### Medium Priority
+- [ ] Add unit tests for core functionality
+- [ ] Implement analytics dashboard features
+- [ ] Add export functionality for recorded phrases
+- [ ] Implement progress tracking system
+- [ ] Add keyboard shortcuts for common actions
+
+### Low Priority
+- [ ] Add dark mode theme support
+- [ ] Implement offline support
+- [ ] Add multi-language interface support
+- [ ] Optimize audio processing for better performance
+- [ ] Add user preferences storage
+
+### Technical Debt
+- [ ] Refactor AudioRecorder.js to reduce file size
+- [ ] Implement proper TypeScript types
+- [ ] Add error boundary components
+- [ ] Improve code documentation coverage
+- [ ] Set up automated testing pipeline
+
+## Current Implementation Status and TODOs
+
+### Core Features In Progress
+
+#### Audio Recording
+- [ ] Add waveform visualization during recording
+- [ ] Implement audio compression for storage optimization
+- [ ] Add recording quality validation
+- [ ] Support for longer recordings (>5 minutes)
+
+#### Training System
+- [ ] Add spaced repetition algorithm
+- [ ] Implement progress tracking per phrase
+- [ ] Add custom training schedules
+- [ ] Support for phrase categories/tags
+
+#### Data Management
+- [ ] Implement data export functionality
+- [ ] Add backup/restore features
+- [ ] Add cloud sync support
+- [ ] Implement recording metadata editing
+
+### UI Improvements
+- [ ] Add dark mode support
+- [ ] Implement responsive design for all screen sizes
+- [ ] Add keyboard shortcuts
+- [ ] Improve accessibility features
+- [ ] Add loading states and transitions
+
+### Technical Debt
+- [ ] Split UIController.js into smaller modules
+  - Move TrainingSession to separate file
+  - Create dedicated analytics module
+- [ ] Add comprehensive error handling
+- [ ] Implement proper TypeScript types
+- [ ] Add unit tests for core functionality
+- [ ] Improve IndexedDB error recovery
+
+### Documentation
+- [ ] Add JSDoc comments to all classes and methods
+- [ ] Create API documentation
+- [ ] Add inline comments for complex logic
+- [ ] Document database schema
+- [ ] Create user guide
+
+### Performance Optimization
+- [ ] Optimize IndexedDB queries
+- [ ] Implement audio streaming for large files
+- [ ] Add caching for frequently accessed data
+- [ ] Optimize chart rendering
+- [ ] Reduce initial load time
+
+### Analytics Features
+- [ ] Implement detailed practice statistics
+- [ ] Add progress tracking visualizations
+- [ ] Create performance insights
+- [ ] Add export of analytics data
+- [ ] Implement custom reporting periods
+
 ## License
 
 [License information will be added here]
