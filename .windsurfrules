@@ -1,0 +1,27 @@
+Naming Stability: Variable, function, method, and class names must not change unless explicitly instructed. Use existing naming conventions consistently.
+File Length Limit: Each file must not exceed 200 lines. If the code approaches this limit, split it into logically related modules or files.
+Modularity: Follow a declarative and functional programming approach for better modularity and reusability.
+One class/module per file
+Code Style
+Naming Conventions
+Documentation
+
+
+JSDoc for functions/classes
+Inline comments for complex logic
+TODO tags for incomplete features
+Follow conventional commits
+Use English
+
+Incomplete Code Handling
+
+TODO Comments
+Include task description
+
+
+Modularity
+
+
+Small, focused modules
+Named imports only
+Avoid circular dependencies
