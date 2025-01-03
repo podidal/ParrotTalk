@@ -1,0 +1,43 @@
+/* Custom styles beyond Tailwind */
+
+.recording {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.phrase-item {
+    transition: all 0.3s ease;
+}
+
+.phrase-item:hover {
+    transform: translateX(5px);
+}
+
+/* Ensure buttons have a nice transition */
+button {
+    transition: all 0.2s ease;
+}
+
+/* Custom scrollbar for phrase list */
+#phraseList::-webkit-scrollbar {
+    width: 8px;
+}
+
+#phraseList::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+#phraseList::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+#phraseList::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

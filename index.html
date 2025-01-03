@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parrot Talk - Training Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Top Bar -->
+        <header class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">Parrot Talk</h1>
+            <button id="settingsBtn" class="p-2 rounded-full hover:bg-gray-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+            </button>
+        </header>
+
+        <!-- Playback Control Panel -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div class="flex justify-center space-x-4 mb-6">
+                <button id="recordBtn" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full">
+                    Record
+                </button>
+                <button id="playBtn" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-full">
+                    Play
+                </button>
+                <button id="stopBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-full">
+                    Stop
+                </button>
+            </div>
+            <div id="phraseList" class="space-y-2">
+                <!-- Phrases will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- Progress Section Placeholder -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4">Training Progress</h2>
+            <div id="progressChart" class="h-64 bg-gray-100 rounded">
+                <!-- Progress chart will be added here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="scripts/AudioRecorder.js"></script>
+    <script src="scripts/AudioPlayback.js"></script>
+    <script src="scripts/StorageManager.js"></script>
+    <script src="scripts/UIController.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
