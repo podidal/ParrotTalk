@@ -1,113 +1,121 @@
 /**
  * @class AudioRecorder
- * @description Handles audio recording functionality for the Parrot Talk application
+ * @description Handles audio recording functionality
  */
 class AudioRecorder {
     constructor() {
         this.mediaRecorder = null;
+        this.audioContext = null;
+        this.audioStream = null;
+        this.audioProcessor = null;
         this.audioChunks = [];
         this.isRecording = false;
-        this.recordingTimer = null;
-        this.recordingDuration = 0;
-        this.maxDuration = 300; // 5 minutes max recording time
+        this.onAudioProcessCallback = null;
     }
 
     /**
-     * @async
      * @method initializeRecorder
-     * @description Initializes the media recorder with user's microphone
-     * @throws {Error} If microphone access is denied or not available
+     * @description Initializes the audio recorder with necessary permissions
+     * @returns {Promise<void>}
      */
     async initializeRecorder() {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            this.mediaRecorder = new MediaRecorder(stream);
-            this.setupRecorderEvents();
-
-            // TODO: Implement noise reduction feature
-            // TODO: Add audio visualization for recording levels
-            // TODO: Add support for different audio formats (wav, mp3)
+            this.audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Create audio source from stream
+            const source = this.audioContext.createMediaStreamSource(this.audioStream);
+            
+            // Create script processor for visualization
+            this.audioProcessor = this.audioContext.createScriptProcessor(2048, 1, 1);
+            this.audioProcessor.connect(this.audioContext.destination);
+            source.connect(this.audioProcessor);
+            
+            this.audioProcessor.onaudioprocess = (e) => {
+                if (this.isRecording && this.onAudioProcessCallback) {
+                    const inputData = e.inputBuffer.getChannelData(0);
+                    this.onAudioProcessCallback(inputData);
+                }
+            };
+            
+            // Initialize MediaRecorder
+            this.mediaRecorder = new MediaRecorder(this.audioStream);
+            
+            this.mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) {
+                    this.audioChunks.push(e.data);
+                }
+            };
+            
+            this.mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
+                this.audioChunks = [];
+                window.dispatchEvent(new CustomEvent('recordingComplete', {
+                    detail: { audioBlob }
+                }));
+            };
         } catch (error) {
-            console.error('Error accessing microphone:', error);
-            throw new Error('Unable to access microphone');
+            console.error('Error initializing recorder:', error);
+            throw error;
         }
-    }
-
-    /**
-     * @private
-     * @method setupRecorderEvents
-     * @description Sets up event listeners for the media recorder
-     */
-    setupRecorderEvents() {
-        this.mediaRecorder.ondataavailable = (event) => {
-            this.audioChunks.push(event.data);
-        };
-
-        this.mediaRecorder.onstop = () => {
-            const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
-            this.audioChunks = [];
-            // TODO: Implement audio compression
-            // TODO: Add audio normalization
-            window.dispatchEvent(new CustomEvent('recordingComplete', {
-                detail: { audioBlob }
-            }));
-        };
-
-        // TODO: Add error handling for recording failures
-        // TODO: Implement pause/resume functionality
     }
 
     /**
      * @method startRecording
-     * @description Starts recording audio with duration tracking
-     * @throws {Error} If recorder is not initialized
+     * @description Starts recording audio
+     * @returns {Promise<void>}
      */
-    startRecording() {
+    async startRecording() {
         if (!this.mediaRecorder) {
-            throw new Error('Recorder not initialized');
+            await this.initializeRecorder();
         }
+
         this.audioChunks = [];
-        this.recordingDuration = 0;
-        this.mediaRecorder.start();
         this.isRecording = true;
-
-        // Start duration timer
-        this.recordingTimer = setInterval(() => {
-            this.recordingDuration++;
-            window.dispatchEvent(new CustomEvent('recordingProgress', {
-                detail: { duration: this.recordingDuration }
-            }));
-
-            // Auto-stop if max duration reached
-            if (this.recordingDuration >= this.maxDuration) {
-                this.stopRecording();
-            }
-        }, 1000);
+        this.mediaRecorder.start();
     }
 
     /**
      * @method stopRecording
-     * @description Stops recording audio and cleans up timers
+     * @description Stops recording audio
+     * @returns {Promise<Blob>} The recorded audio as a Blob
      */
     stopRecording() {
-        if (this.mediaRecorder && this.isRecording) {
+        return new Promise((resolve) => {
+            this.mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
+                this.audioChunks = [];
+                this.isRecording = false;
+                resolve(audioBlob);
+            };
+            
             this.mediaRecorder.stop();
-            this.isRecording = false;
-            if (this.recordingTimer) {
-                clearInterval(this.recordingTimer);
-                this.recordingTimer = null;
-            }
-        }
+        });
     }
 
     /**
-     * @method setMaxDuration
-     * @param {number} seconds - Maximum recording duration in seconds
+     * @method onAudioProcess
+     * @param {Function} callback - Function to call with audio data for visualization
      */
-    setMaxDuration(seconds) {
-        this.maxDuration = Math.max(10, Math.min(600, seconds)); // Between 10s and 10m
+    onAudioProcess(callback) {
+        this.onAudioProcessCallback = callback;
+    }
+
+    /**
+     * @method cleanup
+     * @description Cleans up audio resources
+     */
+    cleanup() {
+        if (this.audioStream) {
+            this.audioStream.getTracks().forEach(track => track.stop());
+        }
+        if (this.audioContext) {
+            this.audioContext.close();
+        }
+        if (this.audioProcessor) {
+            this.audioProcessor.disconnect();
+        }
     }
 }
 
-// Export as a module
 export default AudioRecorder;

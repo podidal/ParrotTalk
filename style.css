@@ -1,105 +1,210 @@
 /* Custom styles beyond Tailwind */
 
-.recording {
-    animation: pulse 1.5s infinite;
+/* Base styles */
+:root {
+    --primary: #3b82f6;
+    --primary-dark: #2563eb;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
 }
 
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
 }
 
-.phrase-item {
+/* Transitions */
+.transition-all {
     transition: all 0.3s ease;
 }
 
-.phrase-item:hover {
-    transform: translateX(5px);
+/* Recording animation */
+@keyframes recordingPulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
-/* Ensure buttons have a nice transition */
+.recording {
+    animation: recordingPulse 2s infinite;
+}
+
+/* Waveform visualization */
+#waveform {
+    position: relative;
+    overflow: hidden;
+}
+
+.waveform-bar {
+    position: absolute;
+    bottom: 0;
+    width: 2px;
+    background-color: var(--primary);
+    border-radius: 1px;
+    transition: height 0.1s ease;
+}
+
+/* Phrase item styles */
+.phrase-item {
+    transition: all 0.3s ease;
+    cursor: grab;
+    user-select: none;
+}
+
+.phrase-item:hover {
+    transform: translateX(4px);
+}
+
+.phrase-item.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.drag-over-top {
+    border-top: 2px solid var(--primary);
+    margin-top: -2px;
+}
+
+.drag-over-bottom {
+    border-bottom: 2px solid var(--primary);
+    margin-bottom: -2px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-thumb {
+    background: #475569;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+}
+
+/* Custom checkbox styles */
+.phrase-select {
+    appearance: none;
+    width: 1.2rem;
+    height: 1.2rem;
+    border: 2px solid #cbd5e1;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.phrase-select:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23ffffff'%3E%3Cpath fill-rule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clip-rule='evenodd'/%3E%3C/svg%3E");
+}
+
+/* Dark mode checkbox */
+.dark .phrase-select {
+    border-color: #475569;
+}
+
+.dark .phrase-select:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* Batch controls animation */
+#batchControls {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translate(-50%, 100%);
+}
+
+#batchControls:not(.hidden) {
+    transform: translate(-50%, 0);
+}
+
+/* Modal animations */
+.modal-enter {
+    opacity: 0;
+    transform: scale(0.95);
+}
+
+.modal-enter-active {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.modal-exit {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.modal-exit-active {
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Button hover effects */
 button {
     transition: all 0.2s ease;
 }
 
+button:hover {
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* Input focus styles */
+input:focus, select:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
 /* Dark mode styles */
-.dark-mode {
-    background-color: #1a1a1a;
-    color: #ffffff;
+.dark {
+    color-scheme: dark;
 }
 
-.dark-mode .bg-white {
-    background-color: #2d2d2d;
+.dark .bg-white {
+    background-color: #1f2937;
 }
 
-.dark-mode .bg-gray-50 {
-    background-color: #363636;
+.dark .text-gray-900 {
+    color: #f9fafb;
 }
 
-.dark-mode .bg-gray-100 {
-    background-color: #404040;
+.dark .border-gray-200 {
+    border-color: #374151;
 }
 
-.dark-mode .text-gray-500 {
-    color: #a0a0a0;
+/* Loading animation */
+@keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
 }
 
-.dark-mode .text-gray-600 {
-    color: #b0b0b0;
-}
-
-.dark-mode .text-gray-700 {
-    color: #c0c0c0;
-}
-
-.dark-mode .text-gray-800 {
-    color: #d0d0d0;
-}
-
-.dark-mode .border {
-    border-color: #404040;
-}
-
-.dark-mode .border-b {
-    border-bottom-color: #404040;
-}
-
-.dark-mode .border-t {
-    border-top-color: #404040;
-}
-
-.dark-mode input[type="range"] {
-    background-color: #404040;
-}
-
-.dark-mode input[type="range"]::-webkit-slider-thumb {
-    background-color: #ffffff;
-}
-
-.dark-mode input[type="range"]::-moz-range-thumb {
-    background-color: #ffffff;
-}
-
-.dark-mode select,
-.dark-mode input[type="time"],
-.dark-mode input[type="number"] {
-    background-color: #363636;
-    color: #ffffff;
-    border-color: #404040;
-}
-
-.dark-mode select option {
-    background-color: #2d2d2d;
-    color: #ffffff;
-}
-
-.dark-mode button.modal-close {
-    color: #a0a0a0;
-}
-
-.dark-mode button.modal-close:hover {
-    color: #ffffff;
+.loading {
+    background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite linear;
 }
 
 /* Slider customization */
@@ -136,16 +241,6 @@ input[type="range"]::-moz-range-thumb {
 
 input[type="range"]::-moz-range-thumb:hover {
     transform: scale(1.1);
-}
-
-/* Modal animations */
-@keyframes modalFadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.modal-container {
-    animation: modalFadeIn 0.3s ease-out;
 }
 
 /* Progress bar customization */

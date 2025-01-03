@@ -11,7 +11,12 @@ import SettingsManager from './scripts/SettingsManager.js';
 import ModalManager from './scripts/ModalManager.js';
 import ThemeManager from './scripts/ThemeManager.js';
 import NotificationManager from './scripts/NotificationManager.js';
+import PhraseListManager from './scripts/PhraseListManager.js';
 
+/**
+ * @class App
+ * @description Main application class that coordinates all components
+ */
 class App {
     constructor() {
         this.recorder = new AudioRecorder();
@@ -22,6 +27,7 @@ class App {
         this.theme = new ThemeManager();
         this.ui = new UIController();
         this.notifications = new NotificationManager(this.settings);
+        this.phraseManager = new PhraseListManager(this.storage, this.ui);
         
         this.currentRecording = null;
         this.currentCategory = null;
@@ -38,7 +44,7 @@ class App {
     async initialize() {
         try {
             await this.recorder.initializeRecorder();
-            this.setupEventListeners();
+            this.setupEventHandlers();
             this.setupCategoryFilter();
             this.loadSavedRecordings();
             this.applySettings();
@@ -47,6 +53,125 @@ class App {
             console.error('Failed to initialize app:', error);
             alert('Failed to access microphone. Please check your permissions.');
         }
+    }
+
+    /**
+     * @private
+     * @method setupEventHandlers
+     * @description Sets up event handlers for UI interactions
+     */
+    setupEventHandlers() {
+        const handlers = {
+            onStartRecording: async () => {
+                const phraseName = this.ui.phraseName.value.trim();
+                if (!phraseName) {
+                    alert('Please enter a phrase name');
+                    return;
+                }
+
+                try {
+                    await this.recorder.startRecording();
+                    this.ui.updateRecordingStatus('Recording...');
+                    
+                    // Start visualizing audio
+                    this.recorder.onAudioProcess((audioData) => {
+                        this.ui.updateWaveform(audioData);
+                    });
+                } catch (error) {
+                    console.error('Failed to start recording:', error);
+                    alert('Failed to start recording. Please check your microphone permissions.');
+                }
+            },
+
+            onStopRecording: async () => {
+                try {
+                    const audioBlob = await this.recorder.stopRecording();
+                    const phraseName = this.ui.phraseName.value.trim();
+                    
+                    await this.storage.saveRecording({
+                        name: phraseName,
+                        data: await this.blobToBase64(audioBlob),
+                        duration: this.recordingDuration,
+                        createdAt: new Date().toISOString(),
+                        playCount: 0
+                    });
+
+                    this.ui.updateRecordingStatus('Recording saved!');
+                    this.ui.phraseName.value = '';
+                    this.loadSavedRecordings();
+                    this.notifications.showRecordingComplete(phraseName);
+                } catch (error) {
+                    console.error('Failed to save recording:', error);
+                    alert('Failed to save recording. Please try again.');
+                }
+            },
+
+            onPlayPhrase: async (recordingId) => {
+                try {
+                    const recording = this.storage.getRecording(recordingId);
+                    if (!recording) return;
+
+                    const audioBlob = await this.base64ToBlob(recording.data);
+                    await this.player.playAudio(audioBlob);
+                    this.storage.updatePlayCount(recordingId);
+                    this.notifications.showPlaybackNotification(recording.name);
+                    this.loadSavedRecordings();
+                } catch (error) {
+                    console.error('Failed to play recording:', error);
+                    alert('Failed to play recording. Please try again.');
+                }
+            },
+
+            onDeletePhrase: (recordingId) => {
+                if (confirm('Are you sure you want to delete this phrase?')) {
+                    this.storage.deleteRecording(recordingId);
+                    this.loadSavedRecordings();
+                }
+            },
+
+            onToggleAutoplay: (isActive) => {
+                if (isActive) {
+                    this.startAutoPlay();
+                } else {
+                    this.stopAutoPlay();
+                }
+            }
+        };
+
+        this.ui.setupEventListeners(handlers);
+    }
+
+    /**
+     * @private
+     * @method blobToBase64
+     * @param {Blob} blob - Audio blob to convert
+     * @returns {Promise<string>} Base64 string
+     */
+    blobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    /**
+     * @private
+     * @method base64ToBlob
+     * @param {string} base64 - Base64 string to convert
+     * @returns {Promise<Blob>} Audio blob
+     */
+    base64ToBlob(base64) {
+        const byteString = atob(base64);
+        const arrayBuffer = new ArrayBuffer(byteString.length);
+        const uint8Array = new Uint8Array(arrayBuffer);
+        
+        for (let i = 0; i < byteString.length; i++) {
+            uint8Array[i] = byteString.charCodeAt(i);
+        }
+        
+        return new Blob([arrayBuffer], { type: 'audio/wav' });
     }
 
     /**
@@ -131,92 +256,6 @@ class App {
 
     /**
      * @private
-     * @method setupEventListeners
-     * @description Sets up event listeners for user interactions
-     */
-    setupEventListeners() {
-        const recordBtn = document.getElementById('recordBtn');
-        const playBtn = document.getElementById('playBtn');
-        const stopBtn = document.getElementById('stopBtn');
-        const volumeSlider = document.getElementById('volumeSlider');
-        const pitchSlider = document.getElementById('pitchSlider');
-        const rateSlider = document.getElementById('rateSlider');
-
-        recordBtn.addEventListener('click', () => this.handleRecordClick());
-        playBtn.addEventListener('click', () => this.handlePlayClick());
-        stopBtn.addEventListener('click', () => this.handleStopClick());
-
-        // Playback control listeners
-        if (volumeSlider) {
-            volumeSlider.addEventListener('input', (e) => {
-                this.player.setVolume(parseFloat(e.target.value));
-            });
-        }
-        if (pitchSlider) {
-            pitchSlider.addEventListener('input', (e) => {
-                this.player.setPitch(parseFloat(e.target.value));
-            });
-        }
-        if (rateSlider) {
-            rateSlider.addEventListener('input', (e) => {
-                this.player.setPlaybackRate(parseFloat(e.target.value));
-            });
-        }
-
-        // Recording progress tracking
-        window.addEventListener('recordingProgress', (event) => {
-            this.recordingDuration = event.detail.duration;
-        });
-
-        // Handle recording completion
-        window.addEventListener('recordingComplete', (event) => {
-            this.currentRecording = event.detail.audioBlob;
-            this.promptForPhraseName();
-        });
-
-        // Phrase list event delegation
-        document.getElementById('phraseList').addEventListener('click', (e) => {
-            const phraseItem = e.target.closest('.phrase-item');
-            if (!phraseItem) return;
-
-            const recordingId = phraseItem.dataset.recordingId;
-            
-            if (e.target.closest('.play-btn')) {
-                this.playRecording(recordingId);
-            } else if (e.target.closest('.edit-btn')) {
-                this.editRecording(recordingId);
-            } else if (e.target.closest('.delete-btn')) {
-                this.deleteRecording(recordingId);
-            }
-        });
-
-        // Settings button click
-        document.getElementById('settingsBtn').addEventListener('click', () => {
-            this.modal.showSettings(this.settings);
-        });
-
-        // Settings change handler
-        window.addEventListener('settingsChanged', () => {
-            this.applySettings();
-            this.setupAutoPlay();
-        });
-
-        // Theme change handler
-        window.addEventListener('themeChanged', (event) => {
-            const isDark = event.detail.theme === 'dark';
-            document.documentElement.classList.toggle('dark', isDark);
-        });
-
-        // Recording completion notification
-        window.addEventListener('recordingComplete', (event) => {
-            if (this.settings.getSettings().notifications.enabled) {
-                this.notifications.showRecordingComplete('New Recording');
-            }
-        });
-    }
-
-    /**
-     * @private
      * @method setupCategoryFilter
      * @description Sets up category filter dropdown
      */
@@ -234,111 +273,6 @@ class App {
                 this.loadSavedRecordings();
             });
         }
-    }
-
-    /**
-     * @private
-     * @method promptForPhraseName
-     * @description Prompts user for phrase name and category, then saves recording
-     */
-    promptForPhraseName() {
-        const name = prompt('Enter a name for this phrase:');
-        if (name) {
-            const categories = this.storage.getCategories();
-            const category = prompt(`Enter category (${categories.join(', ')}):`, 'Phrases');
-            
-            if (category && !categories.includes(category)) {
-                this.storage.addCategory(category);
-            }
-
-            const recordingData = {
-                name,
-                audioBlob: this.currentRecording,
-                category: category || 'Phrases',
-                duration: this.recordingDuration,
-                settings: {
-                    volume: this.player.volume,
-                    pitch: this.player.pitch,
-                    rate: this.player.playbackRate
-                }
-            };
-
-            this.storage.saveRecording(recordingData)
-                .then(() => this.loadSavedRecordings());
-        }
-    }
-
-    /**
-     * @private
-     * @method playRecording
-     * @param {string} recordingId - ID of the recording to play
-     */
-    async playRecording(recordingId) {
-        const recordings = this.storage.getRecordings();
-        const recording = recordings[recordingId];
-        
-        if (recording) {
-            const audioBlob = await this.base64ToBlob(recording.data);
-            await this.player.playAudio(audioBlob, recording.settings);
-            this.storage.updatePlayCount(recordingId);
-            this.notifications.showPlaybackNotification(recording.name);
-            this.loadSavedRecordings();
-        }
-    }
-
-    /**
-     * @private
-     * @method editRecording
-     * @param {string} recordingId - ID of the recording to edit
-     */
-    editRecording(recordingId) {
-        const recordings = this.storage.getRecordings();
-        const recording = recordings[recordingId];
-        
-        if (recording) {
-            const newName = prompt('Enter new name:', recording.name);
-            const categories = this.storage.getCategories();
-            const newCategory = prompt(`Enter new category (${categories.join(', ')}):`, recording.category);
-
-            if (newName || newCategory) {
-                this.storage.updateRecordingMetadata(recordingId, {
-                    name: newName || recording.name,
-                    category: newCategory || recording.category
-                });
-                this.loadSavedRecordings();
-            }
-        }
-    }
-
-    /**
-     * @private
-     * @method deleteRecording
-     * @param {string} recordingId - ID of the recording to delete
-     */
-    deleteRecording(recordingId) {
-        if (confirm('Are you sure you want to delete this recording?')) {
-            this.storage.deleteRecording(recordingId);
-            this.loadSavedRecordings();
-        }
-    }
-
-    /**
-     * @private
-     * @method base64ToBlob
-     * @param {string} base64 - Base64 string to convert
-     * @returns {Blob} Audio blob
-     */
-    base64ToBlob(base64) {
-        const byteString = atob(base64.split(',')[1]);
-        const mimeString = base64.split(',')[0].split(':')[1].split(';')[0];
-        const ab = new ArrayBuffer(byteString.length);
-        const ia = new Uint8Array(ab);
-        
-        for (let i = 0; i < byteString.length; i++) {
-            ia[i] = byteString.charCodeAt(i);
-        }
-        
-        return new Blob([ab], { type: mimeString });
     }
 
     /**

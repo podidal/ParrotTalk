@@ -10,6 +10,10 @@ class UIController {
         this.phraseList = document.getElementById('phraseList');
         this.progressBar = document.getElementById('recordingProgress');
         this.durationDisplay = document.getElementById('durationDisplay');
+        this.autoplayBtn = document.getElementById('autoplayBtn');
+        this.phraseName = document.getElementById('phraseName');
+        this.recordingStatus = document.getElementById('recordingStatus');
+        this.waveform = document.getElementById('waveform');
         
         this.setupEventListeners();
     }
@@ -41,6 +45,45 @@ class UIController {
 
         window.addEventListener('playbackComplete', () => {
             this.updatePlaybackUI(false);
+        });
+
+        // Recording controls
+        this.recordBtn.addEventListener('click', () => {
+            this.recordBtn.classList.add('hidden');
+            this.stopBtn.classList.remove('hidden');
+            this.recordBtn.classList.add('recording');
+            // handlers.onStartRecording();
+        });
+
+        this.stopBtn.addEventListener('click', () => {
+            this.stopBtn.classList.add('hidden');
+            this.recordBtn.classList.remove('hidden');
+            this.recordBtn.classList.remove('recording');
+            // handlers.onStopRecording();
+        });
+
+        // Phrase list interactions
+        this.phraseList.addEventListener('click', (event) => {
+            const playBtn = event.target.closest('.play-btn');
+            const deleteBtn = event.target.closest('.delete-btn');
+            const phraseItem = event.target.closest('.phrase-item');
+
+            if (!phraseItem) return;
+
+            const recordingId = phraseItem.dataset.recordingId;
+
+            if (playBtn) {
+                // handlers.onPlayPhrase(recordingId);
+            } else if (deleteBtn) {
+                // handlers.onDeletePhrase(recordingId);
+            }
+        });
+
+        // Autoplay toggle
+        this.autoplayBtn.addEventListener('click', () => {
+            const isActive = this.autoplayBtn.classList.toggle('bg-blue-600');
+            this.autoplayBtn.classList.toggle('text-white');
+            // handlers.onToggleAutoplay(isActive);
         });
     }
 
@@ -91,19 +134,82 @@ class UIController {
     }
 
     /**
+     * @method updateRecordingStatus
+     * @param {string} status - Current recording status
+     * @description Updates the recording status display
+     */
+    updateRecordingStatus(status) {
+        this.recordingStatus.textContent = status;
+    }
+
+    /**
+     * @method updateWaveform
+     * @param {Float32Array} audioData - Audio data for visualization
+     * @description Updates the waveform visualization
+     */
+    updateWaveform(audioData) {
+        this.waveform.innerHTML = '';
+        const width = this.waveform.clientWidth;
+        const step = Math.ceil(audioData.length / width);
+
+        for (let i = 0; i < width; i++) {
+            const value = audioData[i * step] || 0;
+            const bar = document.createElement('div');
+            bar.className = 'waveform-bar';
+            bar.style.left = `${i}px`;
+            bar.style.height = `${Math.abs(value) * 50}%`;
+            this.waveform.appendChild(bar);
+        }
+    }
+
+    /**
      * @method updatePhraseList
      * @param {Object} recordings - Object containing all recordings
-     * @param {string} [activeCategory] - Currently selected category
      * @description Updates the phrase list in the UI
      */
-    updatePhraseList(recordings, activeCategory) {
-        this.phraseList.innerHTML = '';
-        Object.values(recordings)
-            .filter(recording => !activeCategory || recording.category === activeCategory)
-            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-            .forEach(recording => {
-                const item = this.createPhraseItem(recording);
-                this.phraseList.appendChild(item);
+    updatePhraseList(recordings) {
+        const phraseList = document.getElementById('phraseList');
+        phraseList.innerHTML = '';
+
+        Object.entries(recordings)
+            .sort(([, a], [, b]) => (a.order || 0) - (b.order || 0))
+            .forEach(([id, recording]) => {
+                const li = document.createElement('li');
+                li.className = 'phrase-item bg-white dark:bg-gray-800 p-4 rounded-lg shadow hover:shadow-md transition-all';
+                li.dataset.recordingId = id;
+                li.draggable = true;
+
+                li.innerHTML = `
+                    <div class="flex items-center space-x-4">
+                        <input type="checkbox" class="phrase-select w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-semibold dark:text-white">${recording.name}</h3>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">${recording.duration}s</span>
+                            </div>
+                            <div class="flex items-center space-x-2 mt-2">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">
+                                    <i class="fas fa-play mr-1"></i>${recording.playCount || 0} plays
+                                </span>
+                                ${recording.category ? `
+                                    <span class="text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-0.5 rounded">
+                                        ${recording.category}
+                                    </span>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="play-btn text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button class="delete-btn text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-500">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                phraseList.appendChild(li);
             });
     }
 
