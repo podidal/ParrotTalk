@@ -13,7 +13,10 @@
     <!-- Navigation -->
     <nav class="blue darken-1">
         <div class="nav-wrapper">
-            <a href="#" class="brand-logo">Parrot Trainer</a>
+            <a href="#" class="brand-logo">
+                <img src="images/parrot.svg" alt="Parrot" class="parrot-nav-logo">
+                Parrot Trainer
+            </a>
             <a href="#" data-target="mobile-nav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li><a class="nav-button active" data-screen="home"><i class="material-icons left">home</i>Home</a></li>
@@ -26,6 +29,10 @@
 
     <!-- Mobile Navigation -->
     <ul class="sidenav" id="mobile-nav">
+        <li class="sidenav-logo">
+            <img src="images/parrot.svg" alt="Parrot" class="parrot-nav-logo">
+            <span>Parrot Trainer</span>
+        </li>
         <li><a class="nav-button" data-screen="home"><i class="material-icons left">home</i>Home</a></li>
         <li><a class="nav-button" data-screen="record"><i class="material-icons left">mic</i>Record</a></li>
         <li><a class="nav-button" data-screen="train"><i class="material-icons left">school</i>Train</a></li>
@@ -37,87 +44,34 @@
         <!-- Home Screen -->
         <div id="home-screen" class="screen section">
             <div class="welcome-section">
-                <div class="parrot-logo">
-                    <img src="images/parrot.svg" alt="Parrot Trainer Logo" class="responsive-img">
-                </div>
                 <div class="row">
-                    <div class="col s12 m4 offset-m4">
-                        <a class="waves-effect waves-light btn-large blue" onclick="uiController.showScreen('record')">
-                            <i class="material-icons left">mic</i>Start Recording
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Stats -->
-            <div class="row quick-stats">
-                <div class="col s12 m4">
-                    <div class="card blue lighten-4">
-                        <div class="card-content center-align">
-                            <i class="material-icons medium blue-text">record_voice_over</i>
-                            <div id="homeTotalPhrases" class="stat-value blue-text">0</div>
-                            <div class="stat-label">Phrases Recorded</div>
+                    <div class="col s12 center-align">
+                        <div class="home-stats">
+                            <div class="stat-card">
+                                <i class="material-icons">record_voice_over</i>
+                                <span class="stat-value" id="homeTotalPhrases">0</span>
+                                <span class="stat-label">Phrases</span>
+                            </div>
+                            <div class="stat-card">
+                                <i class="material-icons">school</i>
+                                <span class="stat-value" id="homeTotalSessions">0</span>
+                                <span class="stat-label">Sessions</span>
+                            </div>
+                            <div class="stat-card">
+                                <i class="material-icons">timer</i>
+                                <span class="stat-value" id="homeTotalTime">0m</span>
+                                <span class="stat-label">Practice Time</span>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col s12 m4">
-                    <div class="card green lighten-4">
-                        <div class="card-content center-align">
-                            <i class="material-icons medium green-text">school</i>
-                            <div id="homeTotalSessions" class="stat-value green-text">0</div>
-                            <div class="stat-label">Practice Sessions</div>
+                        <div class="train-button-container">
+                            <a class="btn-floating btn-large waves-effect waves-light blue pulse" onclick="uiController.showScreen('train')">
+                                <i class="material-icons">school</i>
+                            </a>
+                            <p class="train-button-label">Start Training</p>
                         </div>
-                    </div>
-                </div>
-                <div class="col s12 m4">
-                    <div class="card orange lighten-4">
-                        <div class="card-content center-align">
-                            <i class="material-icons medium orange-text">timer</i>
-                            <div id="homeTotalTime" class="stat-value orange-text">0m</div>
-                            <div class="stat-label">Total Practice Time</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Feature Cards -->
-            <div class="row">
-                <div class="col s12 m4">
-                    <div class="card feature-card">
-                        <div class="card-content">
-                            <i class="material-icons blue-text">mic</i>
-                            <span class="card-title">Record Phrases</span>
-                            <p>Record your voice with high-quality audio for precise practice and improvement</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col s12 m4">
-                    <div class="card feature-card">
-                        <div class="card-content">
-                            <i class="material-icons green-text">school</i>
-                            <span class="card-title">Practice Sessions</span>
-                            <p>Create custom training sessions with adjustable repetitions and intervals</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col s12 m4">
-                    <div class="card feature-card">
-                        <div class="card-content">
-                            <i class="material-icons orange-text">analytics</i>
-                            <span class="card-title">Track Progress</span>
-                            <p>Monitor your improvement with detailed statistics and progress charts</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Activity -->
-            <div class="row">
-                <div class="col s12">
-                    <div class="card">
-                        <div class="card-content">
-                            <span class="card-title">Recent Activity</span>
-                            <div id="homeActivityLog" class="collection">
+                        <div class="recent-activity">
+                            <h5>Recent Activity</h5>
+                            <div class="collection" id="homeActivityLog">
                                 <!-- Activity items will be added here -->
                             </div>
                         </div>
