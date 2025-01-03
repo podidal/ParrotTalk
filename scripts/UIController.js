@@ -267,9 +267,9 @@ class UIController {
 
         if (queue.length === 0) {
             queueContainer.innerHTML = `
-                <div class="collection-item center-align grey-text">
+                <div class="empty-queue">
                     <i class="material-icons medium">queue_music</i>
-                    <p>Training queue is empty</p>
+                    <p>Training queue is empty. Add recordings from your library to start training!</p>
                 </div>
             `;
             return;
@@ -282,31 +282,63 @@ class UIController {
                     const item = document.createElement('div');
                     item.className = 'collection-item';
                     item.dataset.id = id;
+                    
+                    const date = new Date(recording.timestamp);
+                    const formattedDate = date.toLocaleDateString(undefined, { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric' 
+                    });
+                    const formattedTime = date.toLocaleTimeString(undefined, { 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    });
+
                     item.innerHTML = `
-                        <div class="row mb-0">
-                            <div class="col s6">
-                                <p class="title">${recording.name}</p>
-                                <p class="grey-text">${new Date(recording.timestamp).toLocaleString()}</p>
-                            </div>
-                            <div class="col s6 right-align">
-                                <audio src="${URL.createObjectURL(recording.audio)}" controls class="audio-preview"></audio>
-                                <a class="btn-floating waves-effect waves-light red remove-from-queue-btn">
+                        <div class="queue-item-content">
+                            <div class="item-header">
+                                <div class="item-info">
+                                    <p class="title">${recording.name}</p>
+                                    <p class="timestamp">
+                                        <i class="material-icons tiny">schedule</i>
+                                        ${formattedDate} at ${formattedTime}
+                                    </p>
+                                </div>
+                                <button class="btn-floating waves-effect waves-light remove-from-queue-btn tooltipped"
+                                        data-position="left"
+                                        data-tooltip="Remove from queue">
                                     <i class="material-icons">remove</i>
-                                </a>
+                                </button>
+                            </div>
+                            <div class="audio-controls">
+                                <audio src="${URL.createObjectURL(recording.audio)}" controls class="audio-preview"></audio>
+                            </div>
+                            <div class="progress hide">
+                                <div class="determinate" style="width: 0%"></div>
+                            </div>
+                            <div class="training-status hide">
+                                <i class="material-icons tiny">play_circle_outline</i>
+                                <span>Waiting...</span>
                             </div>
                         </div>
                     `;
 
-                    item.querySelector('.remove-from-queue-btn').addEventListener('click', () => {
+                    // Add event listeners
+                    const removeBtn = item.querySelector('.remove-from-queue-btn');
+                    removeBtn.addEventListener('click', () => {
                         this.removeFromQueue(id);
                     });
 
                     queueContainer.appendChild(item);
                 }
             } catch (error) {
-                console.error('Error loading queue item:', error);
+                console.error('Error loading recording:', error);
             }
         }
+
+        // Initialize tooltips
+        const tooltips = document.querySelectorAll('.tooltipped');
+        M.Tooltip.init(tooltips);
     }
 
     addToQueue(recording) {

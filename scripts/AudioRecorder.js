@@ -170,9 +170,9 @@ class AudioRecorder {
             if (!recordings || recordings.length === 0) {
                 console.log('No recordings found');
                 phraseList.innerHTML = `
-                    <div class="collection-item center-align grey-text">
+                    <div class="empty-recordings">
                         <i class="material-icons medium">mic_none</i>
-                        <p>No recordings yet</p>
+                        <p>No recordings yet. Click the record button to get started!</p>
                     </div>
                 `;
                 return;
@@ -183,21 +183,42 @@ class AudioRecorder {
                 const item = document.createElement('div');
                 item.className = 'collection-item';
                 const audioUrl = URL.createObjectURL(recording.audio);
+                const date = new Date(recording.timestamp);
+                const formattedDate = date.toLocaleDateString(undefined, { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                const formattedTime = date.toLocaleTimeString(undefined, { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
                 
                 item.innerHTML = `
-                    <div class="row mb-0">
-                        <div class="col s6">
+                    <div class="recording-content">
+                        <div class="recording-info">
                             <p class="title">${recording.name}</p>
-                            <p class="grey-text">${new Date(recording.timestamp).toLocaleString()}</p>
+                            <p class="timestamp">
+                                <i class="material-icons tiny">schedule</i>
+                                ${formattedDate} at ${formattedTime}
+                            </p>
                         </div>
-                        <div class="col s6 right-align">
+                        <div class="audio-controls">
                             <audio src="${audioUrl}" controls class="audio-preview"></audio>
-                            <a class="btn-floating waves-effect waves-light red delete-btn" data-id="${recording.id}">
-                                <i class="material-icons">delete</i>
-                            </a>
-                            <a class="btn-floating waves-effect waves-light green add-to-queue-btn" data-id="${recording.id}">
-                                <i class="material-icons">playlist_add</i>
-                            </a>
+                            <div class="action-buttons">
+                                <button class="btn-floating waves-effect waves-light add-to-queue-btn tooltipped" 
+                                        data-id="${recording.id}"
+                                        data-position="top" 
+                                        data-tooltip="Add to training queue">
+                                    <i class="material-icons">playlist_add</i>
+                                </button>
+                                <button class="btn-floating waves-effect waves-light delete-btn tooltipped" 
+                                        data-id="${recording.id}"
+                                        data-position="top" 
+                                        data-tooltip="Delete recording">
+                                    <i class="material-icons">delete</i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -206,9 +227,12 @@ class AudioRecorder {
                 const deleteBtn = item.querySelector('.delete-btn');
                 deleteBtn.addEventListener('click', async () => {
                     try {
-                        await storageManager.deleteRecording(recording.id);
-                        await this.updatePhraseList();
-                        M.toast({html: 'Recording deleted', classes: 'blue'});
+                        // Ask for confirmation
+                        if (confirm('Are you sure you want to delete this recording?')) {
+                            await storageManager.deleteRecording(recording.id);
+                            await this.updatePhraseList();
+                            M.toast({html: 'Recording deleted', classes: 'blue'});
+                        }
                     } catch (error) {
                         console.error('Error deleting recording:', error);
                         M.toast({html: 'Error deleting recording', classes: 'red'});
@@ -220,14 +244,19 @@ class AudioRecorder {
                     console.log('Adding to queue:', recording);
                     const event = new CustomEvent('addToQueue', { 
                         detail: recording,
-                        bubbles: true, // Make sure the event bubbles up
-                        composed: true // Cross shadow DOM boundary if any
+                        bubbles: true,
+                        composed: true
                     });
                     document.dispatchEvent(event);
                 });
 
                 phraseList.appendChild(item);
             });
+
+            // Initialize tooltips
+            const tooltips = document.querySelectorAll('.tooltipped');
+            M.Tooltip.init(tooltips);
+
             console.log('Finished updating phrase list');
         } catch (error) {
             console.error('Error updating phrase list:', error);

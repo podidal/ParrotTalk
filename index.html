@@ -166,28 +166,33 @@
         <div id="train-screen" class="screen section hide">
             <div class="row">
                 <div class="col s12">
-                    <div class="card">
+                    <div class="card training-queue-card">
                         <div class="card-content">
-                            <span class="card-title">Training Queue</span>
+                            <div class="training-header">
+                                <span class="card-title">Training Queue</span>
+                                <div class="training-controls">
+                                    <div class="switch">
+                                        <label>
+                                            Sequential
+                                            <input type="checkbox" id="randomOrderToggle">
+                                            <span class="lever"></span>
+                                            Random
+                                        </label>
+                                    </div>
+                                    <a id="startTrainingBtn" class="waves-effect waves-light btn green">
+                                        <i class="material-icons left">play_arrow</i>Start Training
+                                    </a>
+                                </div>
+                            </div>
+                            
                             <div id="trainingQueue" class="collection">
                                 <!-- Training queue items will be added here -->
-                            </div>
-                            <div class="card-action">
-                                <a id="startTrainingBtn" class="waves-effect waves-light btn green">
-                                    <i class="material-icons left">play_arrow</i>Start Training
-                                </a>
-                            </div> <div class="col s13">
-                                <div class="switch">
-                                    <label>
-                                        Sequential Order
-                                        <input type="checkbox" id="randomOrderToggle">
-                                        <span class="lever"></span>
-                                        Random Order
-                                    </label>
+                                <div class="training-queue-empty">
+                                    <i class="material-icons">queue_music</i>
+                                    <p>Your training queue is empty. Add recordings from the Record section to start training!</p>
                                 </div>
                             </div>
                         </div>
-                        
                     </div>
                 </div>
             </div>

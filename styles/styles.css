@@ -96,6 +96,228 @@ body {
     background-color: #f9f9f9;
 }
 
+.collection-item {
+    padding: 15px !important;
+    transition: all 0.2s ease;
+    border-radius: 8px !important;
+    margin: 8px 0 !important;
+    background-color: white !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
+}
+
+.collection-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
+}
+
+.collection-item .title {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0 0 5px 0;
+    color: #2c3e50;
+}
+
+.collection-item .timestamp {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    margin: 0;
+}
+
+.collection-item .audio-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.collection-item .audio-preview {
+    flex: 1;
+    height: 40px;
+    border-radius: 20px;
+    background-color: #f8f9fa;
+}
+
+.collection-item .action-buttons {
+    display: flex;
+    gap: 8px;
+    margin-left: 10px;
+}
+
+.collection-item .btn-floating {
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+}
+
+.collection-item .btn-floating i {
+    font-size: 1.2rem;
+    line-height: 36px;
+}
+
+.collection-item .delete-btn {
+    background-color: #e74c3c !important;
+    transition: background-color 0.2s;
+}
+
+.collection-item .delete-btn:hover {
+    background-color: #c0392b !important;
+}
+
+.collection-item .add-to-queue-btn {
+    background-color: #2ecc71 !important;
+    transition: background-color 0.2s;
+}
+
+.collection-item .add-to-queue-btn:hover {
+    background-color: #27ae60 !important;
+}
+
+/* Training Queue */
+#trainingQueue {
+    margin-top: 20px;
+}
+
+#trainingQueue .collection-item {
+    padding: 15px !important;
+    transition: all 0.2s ease;
+    border-radius: 8px !important;
+    margin: 8px 0 !important;
+    background-color: white !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
+}
+
+#trainingQueue .collection-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
+}
+
+#trainingQueue .queue-item-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#trainingQueue .item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#trainingQueue .item-info {
+    flex: 1;
+}
+
+#trainingQueue .title {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0 0 5px 0;
+    color: #2c3e50;
+}
+
+#trainingQueue .timestamp {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+#trainingQueue .audio-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+#trainingQueue .audio-preview {
+    flex: 1;
+    height: 40px;
+    border-radius: 20px;
+    background-color: #f8f9fa;
+}
+
+#trainingQueue .progress {
+    margin: 5px 0;
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: #ecf0f1;
+}
+
+#trainingQueue .progress .determinate {
+    background-color: #3498db;
+    transition: width 0.3s ease;
+}
+
+#trainingQueue .training-status {
+    font-size: 0.9rem;
+    color: #2980b9;
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+#trainingQueue .training-status i {
+    font-size: 1rem;
+}
+
+#trainingQueue .remove-from-queue-btn {
+    background-color: #e74c3c !important;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+}
+
+#trainingQueue .remove-from-queue-btn:hover {
+    background-color: #c0392b !important;
+}
+
+#trainingQueue .remove-from-queue-btn i {
+    font-size: 1.2rem;
+    line-height: 36px;
+}
+
+/* Empty queue state */
+#trainingQueue .empty-queue {
+    padding: 40px 20px;
+    text-align: center;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+#trainingQueue .empty-queue i {
+    color: #bdc3c7;
+    margin-bottom: 15px;
+}
+
+#trainingQueue .empty-queue p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Empty state */
+.empty-recordings {
+    padding: 40px 20px;
+    text-align: center;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.empty-recordings i {
+    color: #bdc3c7;
+    margin-bottom: 15px;
+}
+
+.empty-recordings p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
 /* Buttons */
 .btn-floating { 
     margin: 0 5px;
