@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+    <!-- Body -->
+    <path d="M256 120C180 120 120 180 120 256s60 136 136 136 136-60 136-136S332 120 256 120z" fill="#2196F3"/>
+    
+    <!-- Head -->
+    <path d="M256 170c-47.5 0-86 38.5-86 86s38.5 86 86 86 86-38.5 86-86-38.5-86-86-86z" fill="#1976D2"/>
+    
+    <!-- Eye -->
+    <circle cx="280" cy="240" r="15" fill="white"/>
+    <circle cx="285" cy="235" r="7" fill="black"/>
+    
+    <!-- Beak -->
+    <path d="M310 256c0 0 40 10 50 0s0-30-20-30-30 30-30 30z" fill="#FFC107"/>
+    
+    <!-- Wing -->
+    <path d="M200 256c-20-20-40-20-60 0s-20 40 0 60 40 20 60 0 20-40 0-60z" fill="#64B5F6"/>
+    
+    <!-- Tail Feathers -->
+    <path d="M180 320c-10 10-30 10-40 0s-10-30 0-40 30-10 40 0 10 30 0 40z" fill="#42A5F5"/>
+    <path d="M200 340c-10 10-30 10-40 0s-10-30 0-40 30-10 40 0 10 30 0 40z" fill="#2196F3"/>
+    
+    <!-- Decorative Circles -->
+    <circle cx="220" cy="200" r="5" fill="#BBDEFB"/>
+    <circle cx="240" cy="180" r="5" fill="#BBDEFB"/>
+    <circle cx="260" cy="190" r="5" fill="#BBDEFB"/>
+    
+    <!-- Decorative Patterns -->
+    <path d="M290 280c5 5 15 5 20 0s5-15 0-20-15-5-20 0-5 15 0 20z" fill="#1565C0"/>
+    <path d="M250 300c5 5 15 5 20 0s5-15 0-20-15-5-20 0-5 15 0 20z" fill="#1565C0"/>
+    
+    <!-- Shadow Effects -->
+    <path d="M256 120c-20 0-39 4-56 11 97 17 171 101 171 205 0 7-.3 13-.9 20 13-7 25-16 35-27C447 265 396 120 256 120z" fill="#1976D2" opacity="0.1"/>
+</svg>
