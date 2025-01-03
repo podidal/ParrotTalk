@@ -12,6 +12,10 @@ class AudioPlayback {
         this.playbackRate = 1;
         this.volume = 1;
         this.pitch = 1;
+
+        // TODO: Add audio effects processor
+        // TODO: Implement equalizer
+        // TODO: Add audio waveform visualization
     }
 
     /**
@@ -46,6 +50,10 @@ class AudioPlayback {
             this.setPitch(options.pitch ?? this.pitch);
             this.setPlaybackRate(options.rate ?? this.playbackRate);
 
+            // TODO: Add crossfade between phrases
+            // TODO: Implement audio effects chain
+            // TODO: Add real-time audio processing
+
             // Connect nodes
             this.currentSource.connect(this.gainNode);
             this.gainNode.connect(this.audioContext.destination);
@@ -55,6 +63,9 @@ class AudioPlayback {
                 window.dispatchEvent(new CustomEvent('playbackComplete'));
             };
 
+            // TODO: Add playback position tracking
+            // TODO: Implement audio buffering for smoother playback
+            
             this.currentSource.start();
             this.isPlaying = true;
             window.dispatchEvent(new CustomEvent('playbackStart'));

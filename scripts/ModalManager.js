@@ -5,7 +5,13 @@
 class ModalManager {
     constructor() {
         this.activeModal = null;
+        this.modalStack = [];
         this.setupModalContainer();
+        this.setupEventListeners();
+
+        // TODO: Add modal templates system
+        // TODO: Implement modal state management
+        // TODO: Add modal accessibility features
     }
 
     /**
@@ -21,6 +27,23 @@ class ModalManager {
             container.className = 'fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50';
             document.body.appendChild(container);
         }
+    }
+
+    /**
+     * @private
+     * @method setupEventListeners
+     * @description Sets up event listeners for modal interactions
+     */
+    setupEventListeners() {
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && this.activeModal) {
+                this.hideModal();
+            }
+        });
+
+        // TODO: Add keyboard navigation within modals
+        // TODO: Implement focus trap in modal
+        // TODO: Add screen reader support
     }
 
     /**
@@ -72,17 +95,13 @@ class ModalManager {
         if (options.onShow) {
             options.onShow(modal);
         }
-    }
 
-    /**
-     * @method hideModal
-     * @description Hides the current modal
-     */
-    hideModal() {
-        const container = document.getElementById('modal-container');
-        container.classList.add('hidden');
-        container.innerHTML = '';
-        this.activeModal = null;
+        // TODO: Add modal transition animations
+        // TODO: Implement modal position customization
+        // TODO: Add modal size presets
+        // TODO: Add modal lifecycle hooks
+        // TODO: Implement modal content lazy loading
+        // TODO: Add modal error boundary
     }
 
     /**
@@ -225,6 +244,25 @@ class ModalManager {
                 });
             }
         });
+
+        // TODO: Add settings form validation
+        // TODO: Implement settings preview
+        // TODO: Add settings search functionality
+    }
+
+    /**
+     * @method hideModal
+     * @description Hides the current modal
+     */
+    hideModal() {
+        const container = document.getElementById('modal-container');
+        container.classList.add('hidden');
+        container.innerHTML = '';
+        this.activeModal = null;
+
+        // TODO: Add modal hide animations
+        // TODO: Implement modal cleanup
+        // TODO: Add modal state persistence
     }
 }
 

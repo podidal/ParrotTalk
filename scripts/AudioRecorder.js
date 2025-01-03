@@ -23,6 +23,10 @@ class AudioRecorder {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             this.mediaRecorder = new MediaRecorder(stream);
             this.setupRecorderEvents();
+
+            // TODO: Implement noise reduction feature
+            // TODO: Add audio visualization for recording levels
+            // TODO: Add support for different audio formats (wav, mp3)
         } catch (error) {
             console.error('Error accessing microphone:', error);
             throw new Error('Unable to access microphone');
@@ -42,11 +46,15 @@ class AudioRecorder {
         this.mediaRecorder.onstop = () => {
             const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
             this.audioChunks = [];
-            // Dispatch custom event with the recorded audio
+            // TODO: Implement audio compression
+            // TODO: Add audio normalization
             window.dispatchEvent(new CustomEvent('recordingComplete', {
                 detail: { audioBlob }
             }));
         };
+
+        // TODO: Add error handling for recording failures
+        // TODO: Implement pause/resume functionality
     }
 
     /**

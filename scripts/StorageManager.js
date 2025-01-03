@@ -7,6 +7,10 @@ class StorageManager {
         this.STORAGE_KEY = 'parrotTalk_recordings';
         this.CATEGORIES_KEY = 'parrotTalk_categories';
         this.initializeStorage();
+
+        // TODO: Implement cloud storage sync
+        // TODO: Add backup/restore functionality
+        // TODO: Add storage quota management
     }
 
     /**
@@ -19,6 +23,9 @@ class StorageManager {
             const defaultCategories = ['Greetings', 'Commands', 'Phrases', 'Songs'];
             localStorage.setItem(this.CATEGORIES_KEY, JSON.stringify(defaultCategories));
         }
+
+        // TODO: Implement data migration for version updates
+        // TODO: Add storage integrity check
     }
 
     /**
@@ -37,6 +44,10 @@ class StorageManager {
         // Convert blob to base64
         const base64Data = await this.blobToBase64(recordingData.audioBlob);
         
+        // TODO: Implement data compression
+        // TODO: Add encryption for sensitive data
+        // TODO: Add version control for recordings
+
         recordings[id] = {
             id,
             name: recordingData.name,
@@ -121,6 +132,10 @@ class StorageManager {
         if (recordings[id]) {
             recordings[id] = { ...recordings[id], ...metadata };
             localStorage.setItem(this.STORAGE_KEY, JSON.stringify(recordings));
+
+            // TODO: Add change history tracking
+            // TODO: Implement undo/redo functionality
+            // TODO: Add conflict resolution for concurrent edits
         }
     }
 
@@ -136,6 +151,10 @@ class StorageManager {
                 recording.category === category
             )
         );
+
+        // TODO: Add advanced search/filter capabilities
+        // TODO: Implement sorting options
+        // TODO: Add pagination support
     }
 
     /**

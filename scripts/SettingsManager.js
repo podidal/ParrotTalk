@@ -31,6 +31,10 @@ class SettingsManager {
             }
         };
         this.initializeSettings();
+
+        // TODO: Add settings validation
+        // TODO: Implement settings profiles
+        // TODO: Add settings sync across devices
     }
 
     /**
@@ -40,7 +44,37 @@ class SettingsManager {
      */
     initializeSettings() {
         if (!localStorage.getItem(this.SETTINGS_KEY)) {
-            this.saveSettings(this.defaultSettings);
+            const defaultSettings = {
+                theme: 'system',
+                recording: {
+                    maxDuration: 300,
+                    autoStop: true,
+                    noiseReduction: false
+                },
+                playback: {
+                    defaultVolume: 1,
+                    defaultPitch: 1,
+                    defaultRate: 1,
+                    fadeEffect: true
+                },
+                notifications: {
+                    enabled: true,
+                    sound: true,
+                    training: true
+                },
+                autoPlay: {
+                    enabled: false,
+                    startTime: '09:00',
+                    endTime: '17:00',
+                    interval: 3600
+                }
+            };
+
+            // TODO: Add user preferences migration
+            // TODO: Implement settings versioning
+            // TODO: Add settings backup/restore
+
+            localStorage.setItem(this.SETTINGS_KEY, JSON.stringify(defaultSettings));
         }
     }
 
@@ -68,16 +102,26 @@ class SettingsManager {
      * @param {any} value - New value
      */
     updateSettings(path, value) {
-        const settings = this.getSettings();
-        const pathParts = path.split('.');
-        let current = settings;
-        
-        for (let i = 0; i < pathParts.length - 1; i++) {
-            current = current[pathParts[i]];
+        try {
+            const settings = this.getSettings();
+            const keys = path.split('.');
+            let current = settings;
+
+            // TODO: Add settings change validation
+            // TODO: Implement settings change notifications
+            // TODO: Add settings rollback capability
+
+            for (let i = 0; i < keys.length - 1; i++) {
+                current = current[keys[i]];
+            }
+            current[keys[keys.length - 1]] = value;
+
+            this.saveSettings(settings);
+            return true;
+        } catch (error) {
+            console.error('Failed to update settings:', error);
+            return false;
         }
-        
-        current[pathParts[pathParts.length - 1]] = value;
-        this.saveSettings(settings);
     }
 
     /**
@@ -93,7 +137,13 @@ class SettingsManager {
      * @returns {string} Settings JSON string
      */
     exportSettings() {
-        return JSON.stringify(this.getSettings(), null, 2);
+        const settings = this.getSettings();
+
+        // TODO: Add settings export format options
+        // TODO: Implement settings documentation generation
+        // TODO: Add settings compatibility check
+
+        return JSON.stringify(settings, null, 2);
     }
 
     /**
@@ -104,6 +154,11 @@ class SettingsManager {
     importSettings(jsonString) {
         try {
             const settings = JSON.parse(jsonString);
+
+            // TODO: Add settings schema validation
+            // TODO: Implement settings conflict resolution
+            // TODO: Add settings import history
+
             this.saveSettings(settings);
             return true;
         } catch (error) {
